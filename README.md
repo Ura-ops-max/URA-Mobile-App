@@ -1,56 +1,62 @@
-# Welcome to your Expo app 👋
+# URA Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Native mobile app for URA — Nigeria's social marketplace. Built with **Expo SDK 57 + Expo Router + TypeScript**, with full feature parity to the URA web app.
 
-## Get started
+Runs entirely on **dummy data** today, structured so switching to the real backend is a **single flag flip**.
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Run it
 
 ```bash
-npm run reset-project
+npx expo install        # install deps (SDK-compatible)
+npx expo start          # dev server (press i / a, or scan QR)
+npx tsc --noEmit        # typecheck (clean)
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Demo login is pre-filled on the sign-in screen (any credentials work in mock mode).
 
-### Other setup steps
+## The single flag
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Everything is wired through [`src/constants/config.ts`](src/constants/config.ts):
 
-## Learn more
+```ts
+export const USE_MOCKS = true;                          // ← flip to false for the real backend
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? '…';
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+- When `true`, every `src/api/*` function returns rich mock data after `await sleep(...)` and mutates an in-memory store (`src/mocks/store.ts`).
+- When `false`, the **same functions** (same names, args, return shapes) hit the real axios client (`src/lib/axios-client.ts`) using the exact endpoints and payloads the web app / backend use.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Screens and hooks never branch on the flag — they only call the `api/*` functions, so nothing above the API layer changes when you switch.
 
-## Join the community
+## Architecture
 
-Join our community of developers creating universal apps.
+```
+src/
+  app/            Expo Router routes (see below)
+  api/            One module per domain — mock ⇄ real behind USE_MOCKS
+  mocks/          Typed fixtures (data.ts), mutable store (store.ts), image helpers
+  components/     Shared components (FeedCard, ProfileView, ReviewsSection, ProductForm, …)
+    ui/           Design-system primitives (Text, Button, Input, Card, Avatar, Sheet, Toast, …)
+  context/        Providers (query, auth, cart)
+  hooks/          use-realtime (store events in mock; swap for Socket.IO when live)
+  lib/            axios clients, token storage, formatting, category colours
+  theme/          Colours, spacing, radii, typography — no hardcoded hex in screens
+  types/          Domain types matching the backend response shapes
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Routes
+
+- **Public**: `(public)/` — landing, marketplace, about, contact, faq, terms, privacy
+- **Auth**: `(auth)/` — login, register (live username check), verify-email (6-digit), forgot/reset password, Google OAuth success/failure
+- **Tabs**: `(tabs)/` — Home feed · Search · Sell (+) · Chat · Profile
+- **Stack**: product/[id], post/[id], user/[id], business/[id], cart, checkout, orders, order/[id], deals, bookmarks, image-search, notifications, create-product, edit-product/[id], chat/[id], chat/new, menu, payluk-setup, payment-complete
+- **Wallet**: `wallet/` — overview, transactions, buyer/seller transactions, claim-funds, withdraw (bank verify + OTP), dispute, respond-dispute, confirm-payment
+- **Settings**: `settings/` — home, profile, security, activities
+
+## Going live
+
+1. Set `USE_MOCKS = false` and `EXPO_PUBLIC_API_BASE_URL`.
+2. Start the URA backend (Payluk proxy served under `{base}/payluk`).
+3. Replace the mock branch of `useRealtime` with a Socket.IO subscription (chat/notifications) — the topic names already match.
+
+No screen changes required.

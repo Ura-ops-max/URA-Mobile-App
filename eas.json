@@ -1,0 +1,43 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "base": {
+      "node": "24.15.0",
+      "env": {
+        "API_ROOT_URL": "https://api.ura.com.ng",
+        "API_BASE_URL": "https://api.ura.com.ng/api/v1",
+        "AI_SEARCH_BASE_URL": "",
+        "SITE_URL": "https://www.ura.com.ng",
+        "PAYLUK_PUBLIC_KEY": "pk_live_pEjLgxvzsed6mQ800p50HiY6fmFX7vTJ",
+        "SUPPORT_EMAIL": "info@ura.com.ng",
+        "SUPPORT_PHONE": "+2348152345755",
+        "GOOGLE_SIGN_IN_IOS": "true"
+      }
+    },
+    "development": {
+      "extends": "base",
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "extends": "base",
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "extends": "base",
+      "autoIncrement": true,
+      "android": {
+        "buildType": "app-bundle"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
