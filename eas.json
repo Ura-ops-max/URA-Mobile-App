@@ -9,7 +9,7 @@
       "env": {
         "API_ROOT_URL": "https://api.ura.com.ng",
         "API_BASE_URL": "https://api.ura.com.ng/api/v1",
-        "AI_SEARCH_BASE_URL": "",
+        "AI_SEARCH_BASE_URL": "off",
         "SITE_URL": "https://www.ura.com.ng",
         "PAYLUK_PUBLIC_KEY": "pk_live_pEjLgxvzsed6mQ800p50HiY6fmFX7vTJ",
         "SUPPORT_EMAIL": "info@ura.com.ng",

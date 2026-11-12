@@ -25,6 +25,12 @@ const env = (name: string): string | undefined => {
   return v && v.trim() ? v.trim() : undefined;
 };
 
+const aiSearchBaseUrl = (): string => {
+  const v = process.env.AI_SEARCH_BASE_URL;
+  if (v === undefined) return PROD.aiSearchBaseUrl;
+  return v.trim().toLowerCase() === 'off' ? '' : v.trim();
+};
+
 export default ({ config }: ConfigContext): ExpoConfig => {
   const apiRootUrl = env('API_ROOT_URL') ?? PROD.apiRootUrl;
   const staticConfig = base.expo as ExpoConfig;
@@ -36,8 +42,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ...config.extra,
       apiRootUrl,
       apiBaseUrl: env('API_BASE_URL') ?? `${apiRootUrl}/api/v1`,
-      // Empty string disables the external AI Lambda (text search then uses /search).
-      aiSearchBaseUrl: process.env.AI_SEARCH_BASE_URL !== undefined ? process.env.AI_SEARCH_BASE_URL.trim() : PROD.aiSearchBaseUrl,
+      // Empty or "off" disables the external AI Lambda (text search then uses /search).
+      // eas.json rejects empty env values, so EAS builds use "off".
+      aiSearchBaseUrl: aiSearchBaseUrl(),
       siteUrl: env('SITE_URL') ?? PROD.siteUrl,
       paylukPublicKey: env('PAYLUK_PUBLIC_KEY') ?? PROD.paylukPublicKey,
       supportEmail: env('SUPPORT_EMAIL') ?? PROD.supportEmail,

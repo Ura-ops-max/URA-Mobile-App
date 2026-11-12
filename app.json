@@ -8,7 +8,7 @@
     "scheme": "ura",
     "userInterfaceStyle": "automatic",
     "backgroundColor": "#FFFFFF",
-    "description": "URA \u2014 buy and sell securely across Nigeria. Discover verified sellers, shop with buyer-protected payments, chat with businesses and get fast delivery.",
+    "description": "URA — buy and sell securely across Nigeria. Discover verified sellers, shop with buyer-protected payments, chat with businesses and get fast delivery.",
     "ios": {
       "bundleIdentifier": "ng.com.ura.app",
       "supportsTablet": false,
@@ -130,6 +130,25 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "apiRootUrl": "https://api.ura.com.ng",
+      "apiBaseUrl": "https://api.ura.com.ng/api/v1",
+      "aiSearchBaseUrl": "https://1f56j28jcc.execute-api.eu-west-1.amazonaws.com/Stage",
+      "siteUrl": "https://www.ura.com.ng",
+      "paylukPublicKey": "pk_live_pEjLgxvzsed6mQ800p50HiY6fmFX7vTJ",
+      "supportEmail": "info@ura.com.ng",
+      "supportPhone": "+2348152345755",
+      "googleSignInIos": true,
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "aa068fc4-5e0b-4dc5-86b6-52a7032bd432"
+      }
+    },
+    "owner": "chiefboye"
   }
 }
